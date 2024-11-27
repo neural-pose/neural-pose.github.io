@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Neural Pose Representation Learning for Generating and Transferring Non-Rigid Object Poses">
+  <meta name="keywords" content="Pose Transfer, Deformation Transfer, Hybrid Representation, Jacobian Fields">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+  <title>Neural Pose Representation Learning for Generating and Transferring Non-Rigid Object Poses</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <!-- for LaTeX format -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({            
+        tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}            
+    });
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>
+</head>
+<body>
+
+
+<!-- ========== Title ========== -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Neural Pose Representation Learning for Generating and Transferring <br> Non-Rigid Object Poses</h1>
+          <!-- <div style="font-size:x-large;">Preview</div><br> -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://dvelopery0115.github.io/">Seungwoo Yoo</a>,</span>
+            <span class="author-block">
+              <a href="https://63days.github.io/">Juil Koo</a>,</span>
+            <span class="author-block">
+              <a href="https://github.com/32V/">Kyeongmin Yeo</a>,</span>
+            <span class="author-block">
+              <a href="https://mhsung.github.io/">Minhyuk Sung</a></span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">KAIST</span>
+            <!-- <span class="author-block"><sup>2</sup>Adobe Research</span> -->
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <!-- <span class="link-block">
+                <a href="https://arxiv.org/abs/2406.09728"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>PDF</span>
+                </a>
+              </span> -->
+              <!-- arXiv Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2406.09728"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2406.09728"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ========== Teaser ========== -->
+<div class="container">
+  <div class="content is-max-desktop">
+    <img src="static/images/teaser.png">
+    <p>
+      <b>Teaser.</b> Results of motion sequence transfer (left) and shape variation generation (right) using the proposed neural pose representation. On the left, poses from source shapes (first and third rows) are transferred to target shapes (second and fourth rows), preserving intricate details like horns and antlers. On the right, new poses sampled from a cascaded diffusion model, trained with shape variations of the bunny (last column), are transferred to other animal shapes.
+    </p>
+  </div>
+</div>
+
+
+<!-- ========== Abstract ========== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered is-flex-direction-column">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            We propose a novel method for learning representations of poses for 3D deformable objects, which specializes in 1) disentangling pose information from the object’s identity, 2) facilitating the learning of pose variations, and 3) transferring pose information to other object identities. Based on these properties, our method enables the generation of 3D deformable objects with diversity in both identities and poses, using variations of a single object. It does not require explicit shape parameterization such as skeletons or joints, point-level or shape-level correspondence supervision, or variations of the target object for pose transfer. We first design the pose extractor to represent the pose as a keypoint-based hybrid representation and the pose applier to learn an implicit deformation field. To better distill pose information from the object’s geometry, we propose the implicit pose applier to output an intrinsic mesh property, the face Jacobian. Once the extracted pose information is transferred to the target object, the pose applier is fine-tuned in a self-supervised manner to better describe the target object’s shapes with pose variations. The extracted poses are also used to train a cascaded diffusion model to enable the generation of novel poses. Our experiments with the DeformThings4D and Human datasets demonstrate state-of-the-art performance in pose transfer and the ability to generate diverse deformed shapes with various objects and poses.
+          </p>
+        </div>
+        
+        <!-- ========== Video ========== -->
+        <!-- <video id=“axe” controls autoplay muted loop style="max-width:100%;">
+          <source src="./static/videos/axe_progress.mov">
+        </video> -->
+      </div>
+    </div>
+  </div>
+</section>
+<!-- <hr> -->
+<!-- <script>
+  document.getElementById("axe").play();
+</script> -->
+
+
+<!-- ========== Method ========== -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered is-flex-direction-column">
+      <h2 class="title is-3">Method</h2>
+      <br>
+      <img src="./static/images/method.png" alt="reformulation" style="max-width:100%;">
+      <br>
+      <div class="content has-text-justified">
+        <p>
+          <b>Method Overview.</b>
+          Our framework extracts keypoint-based hybrid pose representations from Jacobian fields.
+          These fields are mapped by the pose extractor $g$ and mapped back by the pose applier $h$.
+          The pose applier, conditioned on the extracted pose, acts as an implicit deformation field for various shapes, including those unseen during training.
+          A refinement module $\alpha$, positioned between $g$ and $h$, is trained in a self-supervised manner, leveraging the target's template shape.
+          The compactness of our latent representations facilitates the training of a diffusion model, enabling diverse pose variations through generative modeling in the latent space.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== DeformingThings4D ========== -->
+<section class="hero teaser">
+  <div class="columns is-centered has-text-centered is-flex-direction-column"><br>
+    <h2 class="title is-3">Qualitative Results Using DeformingThings4D-Animals</h2>
+  </div>
+  <div class="container is-max-desktop">
+    <p>
+    </p>
+  </div>
+  <div class="columns is-centered has-text-centered is-flex-direction-column">
+    <div class="container" style="width:80%;">
+      <img src="./static/images/deform4d_transfer/deform4d_312_0_1_12_0521180342.png" alt="Deform4d_Results" style="max-width:85%;">
+      <img src="./static/images/deform4d_transfer/deform4d_10447_3_7_247_0521180827.png" alt="Deform4d_Results" style="max-width:85%;">
+      <img src="./static/images/deform4d_transfer/deform4d_22894_8_4_94_0521174756.png" alt="Deform4d_Results" style="max-width:85%;">
+      <img src="./static/images/deform4d_transfer/deform4d_21704_8_0_104_0521175349.png" alt="Deform4d_Results" style="max-width:85%;">
+      <!-- <img src="./static/images/3D_results.png" alt="3D_results" style="max-width:85%;"> -->
+      <h2 class="subtitle has-text-centered">
+        
+      </h2>
+    </div>
+  </div>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+</section><br><br>
+
+<!-- <hr> -->
+
+
+<!-- ========== SMPL ========== -->
+<section class="hero teaser">
+  <div class="columns is-centered has-text-centered is-flex-direction-column"><br>
+    <h2 class="title is-3">Qualitative Comparisons Using SMPL Human Body Shapes</h2>
+  </div>
+  <div class="container is-max-desktop">
+    <p>
+    </p>
+  </div>
+  <div class="columns is-centered has-text-centered is-flex-direction-column">
+    <div class="container" style="width:80%;">
+      <img src="./static/images/smpl_transfer_error/common_40_0_40_0521144323.png" alt="SMPL_Results" style="max-width:85%;">
+      <img src="./static/images/smpl_transfer_error/common_2047_6_247.png" alt="SMPL_Results" style="max-width:85%;">
+      <img src="./static/images/smpl_transfer_error/common_2677_8_277.png" alt="SMPL_Results" style="max-width:85%;">
+      <img src="./static/images/smpl_transfer_error/common_1782_5_282.png" alt="SMPL_Results" style="max-width:85%;">
+      <h2 class="subtitle has-text-centered">
+      </h2>
+    </div>
+  </div>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+</section>
+
+<!-- <hr> -->
+
+<!-- ========== Adobe Mixamo ========== -->
+<section class="hero teaser">
+  <div class="columns is-centered has-text-centered is-flex-direction-column"><br>
+    <h2 class="title is-3">Qualitative Results Using Adobe Mixamo</h2>
+  </div>
+  <div class="container is-max-desktop">
+    <p>
+    </p>
+  </div>
+  <div class="columns is-centered has-text-centered is-flex-direction-column">
+    <div class="container" style="width:80%;">
+      <img src="./static/images/mixamo_transfer/common_771_2_171.png" alt="Mixamo_Results" style="max-width:85%;">
+      <img src="./static/images/mixamo_transfer/common_982_3_82.png" alt="Mixamo_Results" style="max-width:85%;">
+      <img src="./static/images/mixamo_transfer/common_1816_6_16.png" alt="Mixamo_Results" style="max-width:85%;">
+      <img src="./static/images/mixamo_transfer/common_2658_8_258.png" alt="Mixamo_Results" style="max-width:85%;">
+      <h2 class="subtitle has-text-centered">
+        
+      </h2>
+    </div>
+  </div>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
+</section><br><br>
+
+<!-- <hr> -->
+
+
+<!-- ========== BibTex ========== -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Citation</h2>
+    <div class="content has-text-justified">
+    <p>
+      Please consider citing our work if you find it useful.
+    </p>
+    </div>
+    <pre><code>
+      @inproceedings{yoo2024neuralpose,
+        title = {{Neural Pose Representation Learning for Generating and Transferring Non-Rigid Object Poses}},
+        author = {Yoo, Seungwoo and Koo, Juil and Yeo, Kyeongmin and Sung, Minhyuk},
+        booktitle = {NeurIPS},
+        year = {2024},
+      }
+    </code></pre>
+  </div>
+</section><hr>
+
+
+<!-- ========== Acknowledgements ========== -->
+<!-- <section class="section">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Acknowledgements</h2>
+  </div>
+</section> -->
+
+<!-- <script src="static/js/script.js"></script>
+<script>
+  new BeforeAfter({
+    id: "#example1"
+  });
+  new BeforeAfter({
+    id: "#example2"
+  });
+  new BeforeAfter({
+    id: "#example3"
+  });
+  new BeforeAfter({
+    id: "#example5"
+  });
+  new BeforeAfter({
+    id: "#example6"
+  });
+  new BeforeAfter({
+    id: "#example7"
+  });
+  new BeforeAfter({
+    id: "#example8"
+  });
+  new BeforeAfter({
+    id: "#example9"
+  });
+  new BeforeAfter({
+    id: "#example10"
+  });
+  new BeforeAfter({
+    id: "#example11"
+  });
+  new BeforeAfter({
+    id: "#example12"
+  });
+  new BeforeAfter({
+    id: "#example13"
+  });
+  new BeforeAfter({
+    id: "#example14"
+  });
+  new BeforeAfter({
+    id: "#example15"
+  });
+  new BeforeAfter({
+    id: "#example16"
+  });
+</script> -->
+
+<!-- ========== footer ========== -->
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="./static/APAP_Main.pdf">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            The website is based on <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>. We thank 
+            <a href="https://keunhong.com/">Keunhong Park</a> for kindly open-sourcing the source code.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
